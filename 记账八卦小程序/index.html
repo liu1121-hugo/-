@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>记账 · 智能消费分析</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="nav-header">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="brand-logo">◆</span>
+        <span class="brand-name">记账</span>
+      </div>
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-view="record">记账</button>
+        <button class="tab-btn" data-view="analysis">分析</button>
+        <button class="tab-btn" data-view="advice">建议</button>
+      </nav>
+      <div class="nav-date" id="navDate"></div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- ========== 记账视图 ========== -->
+    <section class="view view-record active" id="viewRecord">
+      <div class="record-layout">
+        <!-- 输入卡片 -->
+        <div class="card input-card">
+          <h2 class="card-title">添加一笔消费</h2>
+          <form id="recordForm" class="record-form">
+            <div class="form-row">
+              <label class="form-label">金额</label>
+              <div class="amount-input-wrap">
+                <span class="currency">¥</span>
+                <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" required class="amount-input">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">分类 · 拖动旋转选择</label>
+              <div class="cylinder-container" id="cylinderContainer">
+                <div class="cylinder-stage" id="cylinderStage"></div>
+                <div class="cylinder-current" id="cylinderCurrent">餐饮</div>
+              </div>
+              <button type="button" class="cat-manage-toggle" id="catManageToggle">＋ 新建 / 管理分类</button>
+              <div class="cat-manage" id="catManagePanel" style="display:none">
+                <div class="cat-manage-new">
+                  <input type="text" id="newCatName" class="form-input" maxlength="8" placeholder="分类名称，如：宠物">
+                  <div class="cat-pick-row">
+                    <span class="cat-pick-label">图标</span>
+                    <div class="cat-pick-list" id="newCatIcons"></div>
+                  </div>
+                  <div class="cat-pick-row">
+                    <span class="cat-pick-label">颜色</span>
+                    <div class="cat-pick-list" id="newCatColors"></div>
+                  </div>
+                  <div class="cat-pick-row">
+                    <span class="cat-pick-label">五行</span>
+                    <div class="cat-pick-list" id="newCatWuxing"></div>
+                  </div>
+                  <div class="cat-wx-hint" id="newCatWxHint">输入名称后将自动推荐五行，可手动更改</div>
+                  <button type="button" class="btn-secondary cat-add-btn" id="addCatBtn">添加分类</button>
+                </div>
+                <div class="cat-manage-list-label">已有自定义分类</div>
+                <div class="cat-manage-list" id="customCatList"></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">日期</label>
+              <input type="date" id="date" class="form-input" required>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">备注</label>
+              <input type="text" id="note" class="form-input" placeholder="选填，如：午餐、地铁">
+            </div>
+
+            <button type="submit" class="btn-primary">记一笔</button>
+          </form>
+        </div>
+
+        <!-- 今日概览 + 记录列表 -->
+        <div class="record-side">
+          <div class="card today-card">
+            <div class="today-label">今日支出</div>
+            <div class="today-amount" id="todayAmount">¥0.00</div>
+            <div class="today-meta" id="todayMeta">还没有记录</div>
+          </div>
+
+          <div class="card list-card">
+            <div class="list-header">
+              <h2 class="card-title">消费记录</h2>
+              <div class="list-filter">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="week">本周</button>
+                <button class="filter-btn" data-filter="month">本月</button>
+              </div>
+            </div>
+
+            <!-- 高级筛选：消费类型 / 消费金额区间 -->
+            <div class="adv-filter">
+              <div class="adv-filter-head">
+                <span class="adv-filter-toggle" id="advFilterToggle">
+                  <span class="adv-filter-caret">▾</span>高级筛选
+                </span>
+                <span class="adv-filter-summary" id="advFilterSummary"></span>
+              </div>
+
+              <div class="adv-filter-body" id="advFilterBody">
+                <div class="adv-filter-row">
+                  <div class="adv-filter-label">消费类型</div>
+                  <div class="adv-filter-chips" id="typeFilterChips"></div>
+                </div>
+
+                <div class="adv-filter-row">
+                  <div class="adv-filter-label">消费金额</div>
+                  <div class="adv-filter-chips" id="amountFilterChips"></div>
+                  <div class="adv-amount-custom">
+                    <input type="number" id="amountMin" class="form-input adv-amount-input" min="0" step="0.01" placeholder="最低">
+                    <span class="adv-amount-sep">—</span>
+                    <input type="number" id="amountMax" class="form-input adv-amount-input" min="0" step="0.01" placeholder="最高">
+                    <button type="button" class="btn-secondary adv-amount-apply" id="amountApplyBtn">应用</button>
+                  </div>
+                </div>
+
+                <div class="adv-filter-foot">
+                  <button type="button" class="adv-filter-reset" id="advFilterReset">重置筛选</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="record-list" id="recordList">
+              <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p>开始记录第一笔消费吧</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 分析视图 ========== -->
+    <section class="view view-analysis" id="viewAnalysis">
+      <!-- 概览卡片 -->
+      <div class="stats-row" id="statsRow">
+        <div class="card stat-card">
+          <div class="stat-label">本月总支出</div>
+          <div class="stat-value" id="statMonthTotal">¥0</div>
+          <div class="stat-sub" id="statMonthSub">0 笔消费</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">日均支出</div>
+          <div class="stat-value" id="statDailyAvg">¥0</div>
+          <div class="stat-sub" id="statDailySub">按本月天数</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">最大单笔</div>
+          <div class="stat-value" id="statMaxSingle">¥0</div>
+          <div class="stat-sub" id="statMaxSub">—</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">环比上月</div>
+          <div class="stat-value" id="statCompare">—</div>
+          <div class="stat-sub" id="statCompareSub">—</div>
+        </div>
+      </div>
+
+      <div class="analysis-layout">
+        <!-- 类别占比环形图 -->
+        <div class="card chart-card">
+          <h2 class="card-title">分类占比</h2>
+          <div class="donut-wrap">
+            <svg class="donut-chart" id="donutChart" viewBox="0 0 200 200"></svg>
+            <div class="donut-center" id="donutCenter">
+              <div class="donut-total-label">总计</div>
+              <div class="donut-total-value">¥0</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+
+        <!-- 趋势柱状图 -->
+        <div class="card chart-card">
+          <h2 class="card-title">近 14 天趋势</h2>
+          <div class="trend-wrap">
+            <svg class="trend-chart" id="trendChart" viewBox="0 0 600 240"></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 消费八卦分布图 -->
+      <div class="card chart-card bagua-card">
+        <h2 class="card-title">消费八卦分布</h2>
+        <div class="bagua-wrap">
+          <svg class="bagua-svg" id="baguaAnalysisSvg" viewBox="0 0 400 400"></svg>
+        </div>
+        <div class="bagua-legend" id="baguaAnalysisLegend"></div>
+      </div>
+
+      <!-- 月度对比 -->
+      <div class="card chart-card month-compare-card">
+        <div class="month-compare-head">
+          <h2 class="card-title">月度对比</h2>
+          <div class="list-filter" id="monthRangeFilter">
+            <button class="filter-btn active" data-months="6">近 6 月</button>
+            <button class="filter-btn" data-months="12">近 12 月</button>
+          </div>
+        </div>
+        <div class="month-chart-wrap">
+          <svg class="month-chart" id="monthChart" viewBox="0 0 600 260"></svg>
+        </div>
+        <div class="month-summary" id="monthSummary"></div>
+
+        <div class="cat-compare-section">
+          <div class="cat-compare-title">
+            <span>分类维度对比</span>
+            <span class="cat-compare-sub" id="catCompareSub">本月 vs 上月</span>
+          </div>
+          <div class="cat-compare-legend">
+            <span class="cc-legend-item"><i class="cc-dot cc-dot-cur"></i>本月</span>
+            <span class="cc-legend-item"><i class="cc-dot cc-dot-prev"></i>上月</span>
+          </div>
+          <div class="cat-compare-list" id="catCompareList"></div>
+        </div>
+      </div>
+
+      <!-- 分类明细排行 -->
+      <div class="card chart-card">
+        <h2 class="card-title">分类排行</h2>
+        <div class="rank-list" id="rankList"></div>
+      </div>
+    </section>
+
+    <!-- ========== 建议视图 ========== -->
+    <section class="view view-advice" id="viewAdvice">
+      <div class="advice-layout">
+        <!-- 预算设置 -->
+        <div class="card budget-card">
+          <h2 class="card-title">月度预算</h2>
+          <div class="budget-display">
+            <div class="budget-current" id="budgetCurrent">¥0</div>
+            <div class="budget-progress-wrap">
+              <div class="budget-progress-bar" id="budgetBar"></div>
+            </div>
+            <div class="budget-info">
+              <span id="budgetUsed">已用 ¥0</span>
+              <span id="budgetRemain">剩余 ¥0</span>
+            </div>
+          </div>
+          <div class="budget-set">
+            <input type="number" id="budgetInput" placeholder="设置月度预算" min="0" class="form-input">
+            <button class="btn-secondary" id="budgetSetBtn">设置</button>
+          </div>
+        </div>
+
+        <!-- 命理分析侧栏 -->
+        <div class="card destiny-card">
+          <h2 class="card-title">生辰八字 · 命宫</h2>
+          <div id="destinyInputArea">
+            <div class="form-row">
+              <label class="form-label">出生日期（公历）</label>
+              <input type="date" id="birthDate" class="form-input" max="2026-12-31">
+            </div>
+            <div class="form-row">
+              <label class="form-label">出生时辰</label>
+              <select id="birthHour" class="form-input">
+                <option value="0">子时 (23:00-01:00)</option>
+                <option value="1">丑时 (01:00-03:00)</option>
+                <option value="2">寅时 (03:00-05:00)</option>
+                <option value="3">卯时 (05:00-07:00)</option>
+                <option value="4">辰时 (07:00-09:00)</option>
+                <option value="5">巳时 (09:00-11:00)</option>
+                <option value="6">午时 (11:00-13:00)</option>
+                <option value="7">未时 (13:00-15:00)</option>
+                <option value="8">申时 (15:00-17:00)</option>
+                <option value="9">酉时 (17:00-19:00)</option>
+                <option value="10">戌时 (19:00-21:00)</option>
+                <option value="11">亥时 (21:00-23:00)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label">性别</label>
+              <div class="gender-select">
+                <button type="button" class="gender-btn active" data-gender="male">男</button>
+                <button type="button" class="gender-btn" data-gender="female">女</button>
+              </div>
+            </div>
+            <button class="btn-primary" id="calcBaziBtn">排盘分析</button>
+          </div>
+
+          <div id="destinyResult" class="destiny-result" style="display:none">
+            <div class="bazi-display" id="baziDisplay"></div>
+            <div class="minggong-display" id="minggongDisplay"></div>
+            <div class="wuxing-chart" id="wuxingChart"></div>
+            <div class="wuxing-summary" id="wuxingSummary"></div>
+            <div class="bagua-personal-section">
+              <div class="bagua-section-title">命理消费八卦</div>
+              <div class="bagua-wrap bagua-wrap-sm">
+                <svg class="bagua-svg" id="baguaPersonalSvg" viewBox="0 0 400 400"></svg>
+              </div>
+              <div class="bagua-interpretation" id="baguaInterpretation"></div>
+            </div>
+            <button class="btn-secondary" id="resetBaziBtn" style="margin-top:12px">重新输入</button>
+          </div>
+        </div>
+
+        <!-- 智能建议 -->
+        <div class="advice-main">
+          <div class="card daily-fortune-card" id="dailyFortuneCard" style="display:none">
+            <h2 class="card-title">今日宜购 · 天干地支</h2>
+            <div id="dailyFortuneContent"></div>
+          </div>
+          <h2 class="section-title">智能消费建议</h2>
+          <div class="advice-list" id="adviceList">
+            <div class="empty-state">
+              <div class="empty-icon">💡</div>
+              <p>记录更多消费后，将为你生成个性化建议</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 确认弹窗 -->
+  <div class="modal-mask" id="confirmModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box" role="document">
+      <div class="modal-icon" id="confirmIcon">⚠️</div>
+      <div class="modal-title" id="confirmTitle">确认操作</div>
+      <div class="modal-desc" id="confirmDesc"></div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" id="confirmCancel">取消</button>
+        <button type="button" class="modal-btn modal-btn-ok" id="confirmOk">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

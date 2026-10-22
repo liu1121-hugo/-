@@ -1,0 +1,3 @@
+Valid actions: ["start" "stop" "restart" "install" "uninstall"]
+my actions: "restart"
+ Valid service actions err: Failed to restart Cpolar Service: Access is denied. 

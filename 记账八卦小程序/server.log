@@ -1,0 +1,24 @@
+Serving HTTP on :: port 8090 (http://[::]:8090/) ...
+::1 - - [11/Oct/2026 13:40:43] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:41:09] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:42:09] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:45:48] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:45:48] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:45:50] "GET /styles.css HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:45:50] "GET /app.js HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:27] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:30] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:30] "GET /app.js HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:30] "GET /styles.css HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:58] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:58] "GET /styles.css HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:58] "GET /app.js HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 13:59:58] code 404, message File not found
+::1 - - [11/Oct/2026 13:59:58] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [11/Oct/2026 13:59:59] code 404, message File not found
+::1 - - [11/Oct/2026 13:59:59] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [11/Oct/2026 14:00:14] "GET / HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 14:00:14] "GET /app.js HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 14:00:14] "GET /styles.css HTTP/1.1" 200 -
+::1 - - [11/Oct/2026 14:00:15] code 404, message File not found
+::1 - - [11/Oct/2026 14:00:15] "GET /favicon.ico HTTP/1.1" 404 -
